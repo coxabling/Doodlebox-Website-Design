@@ -52,6 +52,12 @@ const Portfolio: React.FC = () => {
       title: 'Music Station Radio',
       category: 'Online Radio Platform'
     },
+    {
+      url: 'https://shinefm.live/',
+      imageUrl: 'https://images.unsplash.com/photo-1546187747-9f6e7039a7b5?q=80&w=800&auto=format&fit=crop', // Image for radio station
+      title: 'Shine FM Radio',
+      category: 'Online Radio Station'
+    },
   ];
 
   return (
