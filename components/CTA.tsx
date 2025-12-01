@@ -12,12 +12,8 @@ const CTA: React.FC = () => {
           <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
             Stop waiting and start building. Let's talk about your project and get your brand online in the next 24 hours.
           </p>
-          <a
-            href="mailto:hello@doodlebox.design"
-            className="bg-white text-brand-secondary font-bold py-4 px-10 rounded-lg text-lg hover:bg-gray-200 transition-transform transform hover:scale-105 inline-block"
-          >
-            Get a Free Quote
-          </a>
+          {/* The chat button in App.tsx now handles contact initiatives */}
+          <p className="text-white/90 text-sm mt-4">Click the chat icon at the bottom right to get a free quote!</p>
         </div>
       </div>
     </section>

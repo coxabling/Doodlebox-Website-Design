@@ -1,7 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 
-const Hero: React.FC = () => {
+interface HeroProps {
+  onOpenChat: () => void;
+}
+
+const Hero: React.FC<HeroProps> = ({ onOpenChat }) => {
   const [offsetY, setOffsetY] = useState(0);
   const handleScroll = () => setOffsetY(window.pageYOffset);
 
@@ -31,9 +34,13 @@ const Hero: React.FC = () => {
           Doodlebox is your go-to place for all things design. (Well, most things). We are a small group of designers that specialise in making beautiful, bespoke websites, incredibly fast.
         </p>
         <div className="flex justify-center space-x-4">
-          <a href="#contact" className="bg-brand-primary text-white font-bold py-4 px-8 rounded-lg text-lg hover:bg-brand-secondary transition-transform transform hover:scale-105 shadow-lg shadow-brand-primary/20">
+          <button
+            onClick={onOpenChat}
+            className="bg-brand-primary text-white font-bold py-4 px-8 rounded-lg text-lg hover:bg-brand-secondary transition-transform transform hover:scale-105 shadow-lg shadow-brand-primary/20"
+            aria-label="Start your project and get a quote via chat"
+          >
             Start Your Project
-          </a>
+          </button>
           <a href="#portfolio" className="bg-dark-card text-light-text font-bold py-4 px-8 rounded-lg text-lg hover:bg-gray-700 transition-colors">
             See Our Work
           </a>
