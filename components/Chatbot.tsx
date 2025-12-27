@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { GoogleGenAI, Chat, GenerateContentResponse } from "@google/genai";
 
@@ -10,27 +9,28 @@ interface ChatbotProps {
 interface Message {
   text: string;
   sender: 'user' | 'bot';
+  isStreaming?: boolean;
 }
 
 const Chatbot: React.FC<ChatbotProps> = ({ isOpen, onClose }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isTyping, setIsTyping] = useState<boolean>(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const chatInstanceRef = useRef<Chat | null>(null);
 
   useEffect(() => {
-    // Initialize chat instance only when the chatbot is opened for the first time
-    // or when API key might refresh (though not an issue with `process.env.API_KEY`)
     if (isOpen && !chatInstanceRef.current) {
       initializeChat();
     }
   }, [isOpen]);
 
-  // Scroll to bottom of chat messages
   useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
     }
   }, [messages, isOpen]);
 
@@ -38,43 +38,67 @@ const Chatbot: React.FC<ChatbotProps> = ({ isOpen, onClose }) => {
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       chatInstanceRef.current = ai.chats.create({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3-flash-preview',
         config: {
-          systemInstruction: 'You are a friendly and helpful assistant for Doodlebox, a bespoke website design agency. You help users understand services, process, and answer common questions, guiding them towards getting a quote. Keep responses concise and encouraging. Do not provide information outside of Doodlebox services.',
+          systemInstruction: `You are the Doodlebox Design AI, a sleek and professional assistant. 
+          Your goal is to help clients understand that Doodlebox delivers elite, bespoke websites in just 24 hours. 
+          Be conversational, slightly witty, and highly professional. 
+          Doodlebox specialties: Web Design, UI/UX, Performance Optimization, and SEO. 
+          Prices start at $1,500 for a standard bespoke site. 
+          Always try to guide the user towards starting a project.`,
         },
       });
-      setMessages([{ text: "Hi there! I'm your Doodlebox assistant. How can I help you get your bespoke website today?", sender: 'bot' }]);
+      setMessages([{ text: "Hey! I'm the Doodlebox Design AI. Ready to build something legendary in the next 24 hours? What can I help you with?", sender: 'bot' }]);
     } catch (error) {
-      console.error("Failed to initialize chat:", error);
-      setMessages([{ text: "Oops, something went wrong initializing the chat. Please try again later.", sender: 'bot' }]);
-      setIsLoading(false);
+      console.error("Chat init failed:", error);
+      setMessages([{ text: "System glitch. Please refresh or try again later.", sender: 'bot' }]);
     }
   };
 
   const sendMessage = async () => {
-    if (input.trim() === '' || isLoading) return;
+    if (input.trim() === '' || isTyping) return;
 
-    const userMessage: Message = { text: input, sender: 'user' };
-    setMessages((prev) => [...prev, userMessage]);
+    const userMsg = input;
+    setMessages(prev => [...prev, { text: userMsg, sender: 'user' }]);
     setInput('');
-    setIsLoading(true);
+    setIsTyping(true);
 
-    if (!chatInstanceRef.current) {
-      console.error("Chat instance not initialized.");
-      setMessages((prev) => [...prev, { text: "Sorry, the chat is not ready yet. Please try again in a moment.", sender: 'bot' }]);
-      setIsLoading(false);
-      return;
-    }
+    if (!chatInstanceRef.current) return;
 
     try {
-      const response: GenerateContentResponse = await chatInstanceRef.current.sendMessage({ message: input });
-      const botResponseText = response.text || "I'm sorry, I couldn't generate a response.";
-      setMessages((prev) => [...prev, { text: botResponseText, sender: 'bot' }]);
+      // Add an empty message for streaming
+      setMessages(prev => [...prev, { text: '', sender: 'bot', isStreaming: true }]);
+      
+      const streamResponse = await chatInstanceRef.current.sendMessageStream({ message: userMsg });
+      
+      let fullText = '';
+      for await (const chunk of streamResponse) {
+        const textChunk = (chunk as GenerateContentResponse).text || '';
+        fullText += textChunk;
+        
+        setMessages(prev => {
+          const newMessages = [...prev];
+          const lastMsg = newMessages[newMessages.length - 1];
+          if (lastMsg.sender === 'bot' && lastMsg.isStreaming) {
+            lastMsg.text = fullText;
+          }
+          return newMessages;
+        });
+      }
+
+      // Finalize the message
+      setMessages(prev => {
+        const newMessages = [...prev];
+        const lastMsg = newMessages[newMessages.length - 1];
+        lastMsg.isStreaming = false;
+        return newMessages;
+      });
+
     } catch (error) {
-      console.error("Error sending message to Gemini:", error);
-      setMessages((prev) => [...prev, { text: "I'm having trouble connecting right now. Could you please try again in a moment?", sender: 'bot' }]);
+      console.error("Stream failed:", error);
+      setMessages(prev => [...prev, { text: "Connection interrupted. Let's try that again.", sender: 'bot' }]);
     } finally {
-      setIsLoading(false);
+      setIsTyping(false);
     }
   };
 
@@ -82,84 +106,58 @@ const Chatbot: React.FC<ChatbotProps> = ({ isOpen, onClose }) => {
 
   return (
     <div
-      className="fixed bottom-20 right-6 w-11/12 md:w-96 h-[500px] bg-dark-card rounded-lg shadow-2xl flex flex-col z-50 border border-gray-700 backdrop-blur-md bg-opacity-90"
+      className="fixed bottom-24 right-6 w-[calc(100vw-3rem)] md:w-[420px] h-[600px] glass rounded-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] flex flex-col z-50 overflow-hidden animate-reveal border border-white/10"
       role="dialog"
-      aria-labelledby="chatbot-header"
     >
-      <div className="flex items-center justify-between p-4 border-b border-gray-700 bg-dark-bg rounded-t-lg">
-        <h2 id="chatbot-header" className="text-lg font-bold text-light-text">Doodlebox Assistant</h2>
-        <button
-          onClick={onClose}
-          className="text-medium-text hover:text-light-text transition-colors"
-          aria-label="Close chatbot"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      {/* Header */}
+      <div className="p-6 border-b border-white/5 bg-white/5 flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <div className="w-3 h-3 bg-brand-primary rounded-full animate-pulse"></div>
+          <div>
+            <h2 className="text-sm font-black text-light-text tracking-widest uppercase">Design AI</h2>
+            <p className="text-[10px] text-brand-primary font-bold uppercase">Online Now</p>
+          </div>
+        </div>
+        <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-xl transition-colors text-medium-text">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
-      <div ref={chatContainerRef} className="flex-1 p-4 overflow-y-auto custom-scrollbar">
+
+      {/* Messages */}
+      <div ref={chatContainerRef} className="flex-1 p-6 overflow-y-auto space-y-6 scroll-smooth">
         {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`mb-4 flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-          >
-            <div
-              className={`max-w-[80%] p-3 rounded-lg ${
-                msg.sender === 'user'
-                  ? 'bg-brand-primary text-white ml-auto'
-                  : 'bg-gray-700 text-light-text mr-auto'
-              }`}
-            >
-              <p className="text-sm">{msg.text}</p>
+          <div key={index} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+            <div className={`max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed ${
+              msg.sender === 'user' 
+                ? 'bg-brand-primary text-dark-bg font-bold shadow-lg shadow-brand-primary/20 rounded-tr-none' 
+                : 'bg-white/5 text-light-text border border-white/5 rounded-tl-none'
+            }`}>
+              {msg.text || (msg.isStreaming && <span className="animate-pulse">Thinking...</span>)}
             </div>
           </div>
         ))}
-        {isLoading && (
-          <div className="mb-4 flex justify-start">
-            <div className="max-w-[80%] p-3 rounded-lg bg-gray-700 text-light-text">
-              <span className="animate-pulse">Typing...</span>
-            </div>
-          </div>
-        )}
       </div>
-      <div className="p-4 border-t border-gray-700 bg-dark-bg rounded-b-lg flex items-center">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-          placeholder="Ask me anything..."
-          className="flex-1 p-3 rounded-lg bg-dark-card border border-gray-600 text-light-text placeholder-medium-text focus:outline-none focus:border-brand-primary transition-colors"
-          aria-label="Chat input"
-        />
-        <button
-          onClick={sendMessage}
-          disabled={isLoading || input.trim() === ''}
-          className={`ml-3 p-3 rounded-lg ${
-            isLoading || input.trim() === ''
-              ? 'bg-gray-600 cursor-not-allowed'
-              : 'bg-brand-primary hover:bg-brand-secondary'
-          } text-white transition-colors transform hover:scale-105`}
-          aria-label="Send message"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-        </button>
+
+      {/* Input */}
+      <div className="p-6 bg-white/5 border-t border-white/5">
+        <div className="flex items-center glass rounded-2xl p-1 px-3 focus-within:ring-2 ring-brand-primary/50 transition-all">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+            placeholder="Describe your vision..."
+            className="flex-1 bg-transparent border-none py-3 text-sm text-light-text placeholder-medium-text focus:outline-none"
+          />
+          <button
+            onClick={sendMessage}
+            disabled={isTyping || input.trim() === ''}
+            className={`p-2 rounded-xl transition-all ${isTyping || input.trim() === '' ? 'text-white/20' : 'text-brand-primary hover:bg-brand-primary hover:text-dark-bg'}`}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+        </div>
       </div>
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #2d3748; /* dark-card */
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #00BFFF; /* brand-primary */
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #1E90FF; /* brand-secondary */
-        }
-      `}</style>
     </div>
   );
 };

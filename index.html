@@ -4,41 +4,78 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjEgMTZWOEMyMSA2Ljg5NTQzIDIwLjEwNDYgNiAxOSA2SDVDMy44OTU0MyA2IDMgNi44OTU0MyAzIDhWMTZDMyAxNy4xMDQ2IDMuODk1NDMgMTggNSAxOEgxOUMyMC4xMDQ2IDE4IDIxIDE3LjEwNDYgMjEgMTZaIiBzdHJva2U9IiMwMEJGRkYiIHN0cm9rZVdpZHRoPSIyIiBzdHJva2VMaW5lY2FwPSJyb3VuZCIgc3Ryb2tlTGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTcgMTJMMTAgMTVMMTcgOCIgc3Ryb2tlPSIjMDBCRkZGIiBzdHJva2VXaWR0aD0iMiIgc3Ryb2tlTGluZWNhcD0icm91bmQiIHN0cm9rZUxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg=="/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Doodlebox | Bespoke Websites in 24 Hours</title>
+    <title>Doodlebox | Elite Bespoke Websites</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         theme: {
           extend: {
             colors: {
-              'brand-primary': '#00BFFF', // Deep Sky Blue
-              'brand-secondary': '#1E90FF', // Dodger Blue
-              'dark-bg': '#1a202c',
-              'dark-card': '#2d3748',
-              'light-text': '#f7fafc',
-              'medium-text': '#a0aec0',
+              'brand-primary': '#00E5FF', // More vibrant Cyan
+              'brand-secondary': '#2979FF', // More vibrant Blue
+              'dark-bg': '#0B0F1A', // Deeper dark
+              'dark-card': '#161B22',
+              'light-text': '#F0F6FC',
+              'medium-text': '#8B949E',
             },
             fontFamily: {
               sans: ['Inter', 'sans-serif'],
             },
+            animation: {
+              'spin-slow': 'spin 8s linear infinite',
+              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            }
           },
         },
       }
     </script>
+    <style>
+      @keyframes reveal {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .reveal {
+        animation: reveal 0.8s ease-out forwards;
+      }
+      .glass {
+        background: rgba(22, 27, 34, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .text-gradient {
+        background: linear-gradient(135deg, #00E5FF 0%, #2979FF 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0B0F1A;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #161B22;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #2979FF;
+      }
+    </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0"
-  }
-}
-</script>
-</head>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://aistudiocdn.com/react@^19.2.0",
+        "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+        "react/": "https://aistudiocdn.com/react@^19.2.0/",
+        "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0"
+      }
+    }
+    </script>
+  </head>
   <body>
     <div id="root"></div>
   </body>
