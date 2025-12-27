@@ -2,7 +2,7 @@
 <html lang="en" style="scroll-behavior: smooth;">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjEgMTZWOEMyMSA2Ljg5NTQzIDIwLjEwNDYgNiAxOSA2SDVDMy44OTU0MyA2IDMgNi44OTU0MyAzIDhWMTZDMyAxNy4xMDQ2IDMuODk1NDMgMTggNSAxOEgxOUMyMC4xMDQ2IDE4IDIxIDE3LjEwNDYgMjEgMTZaIiBzdHJva2U9IiMwMEJGRkYiIHN0cm9rZVdpZHRoPSIyIiBzdHJva2VMaW5lY2FwPSJyb3VuZCIgc3Ryb2tlTGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTcgMTJMMTAgMTVMMTcgOCIgc3Ryb2tlPSIjMDBCRkZGIiBzdHJva2VXaWR0aD0iMiIgc3Ryb2tlTGluZWNhcD0icm91bmQiIHN0cm9rZUxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg=="/>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjEgMTZWOEMyMSA2Ljg5NTQzIDIwLjEwNDYgNiAxOSA2SDVDMy44OTU0MyA2IDMgNi44OTU0MyAzIDhWMTZDMyAxNy4xMDQ2IDMuODk1NDMgMTggNSAxOEgxOUMyMC4xMDQ2IDI4IDIxIDE3LjEwNDYgMjEgMTZaIiBzdHJva2U9IiMwMEJGRkYiIHN0cm9rZVdpZHRoPSIyIiBzdHJva2VMaW5lY2FwPSJyb3VuZCIgc3Ryb2tlTGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTcgMTJMMTAgMTVMMTcgOCIgc3Ryb2tlPSIjMDBCRkZGIiBzdHJva2VXaWR0aD0iMiIgc3Ryb2tlTGluZWNhcD0icm91bmQiIHN0cm9rZUxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg=="/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Doodlebox | Elite Bespoke Websites</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -11,9 +11,9 @@
         theme: {
           extend: {
             colors: {
-              'brand-primary': '#00E5FF', // More vibrant Cyan
-              'brand-secondary': '#2979FF', // More vibrant Blue
-              'dark-bg': '#0B0F1A', // Deeper dark
+              'brand-primary': '#00E5FF', 
+              'brand-secondary': '#2979FF',
+              'dark-bg': '#0B0F1A', 
               'dark-card': '#161B22',
               'light-text': '#F0F6FC',
               'medium-text': '#8B949E',
@@ -24,30 +24,59 @@
             animation: {
               'spin-slow': 'spin 8s linear infinite',
               'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'float': 'float 6s ease-in-out infinite',
+            },
+            keyframes: {
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-20px)' },
+              }
             }
           },
         },
       }
     </script>
     <style>
+      :root {
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+      }
+      
+      body {
+        background-color: #0B0F1A;
+      }
+
       @keyframes reveal {
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
       }
+      
       .reveal {
         animation: reveal 0.8s ease-out forwards;
       }
+      
       .glass {
-        background: rgba(22, 27, 34, 0.7);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(22, 27, 34, 0.4);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
       }
+      
       .text-gradient {
         background: linear-gradient(135deg, #00E5FF 0%, #2979FF 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
       }
+
+      .grain {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        opacity: 0.03;
+        pointer-events: none;
+        z-index: 9999;
+      }
+
       ::-webkit-scrollbar {
         width: 8px;
       }
@@ -77,6 +106,7 @@
     </script>
   </head>
   <body>
+    <div class="grain"></div>
     <div id="root"></div>
   </body>
 </html>

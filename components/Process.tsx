@@ -1,47 +1,66 @@
-
 import React from 'react';
 
 interface ProcessStepProps {
   number: string;
   title: string;
   description: string;
+  isLast?: boolean;
 }
 
-const ProcessStep: React.FC<ProcessStepProps> = ({ number, title, description }) => (
-  <div className="relative pl-12">
-    <div className="absolute left-0 top-0 h-10 w-10 flex items-center justify-center bg-dark-card border-2 border-brand-primary text-brand-primary font-bold text-xl rounded-full">
-      {number}
+const ProcessStep: React.FC<ProcessStepProps> = ({ number, title, description, isLast }) => (
+  <div className="flex group relative">
+    <div className="flex flex-col items-center mr-8">
+      <div className="w-12 h-12 rounded-full glass border border-white/20 flex items-center justify-center font-black text-brand-primary z-10 group-hover:scale-110 group-hover:bg-brand-primary group-hover:text-dark-bg transition-all duration-500">
+        {number}
+      </div>
+      {!isLast && <div className="flex-1 w-[2px] bg-gradient-to-b from-brand-primary/50 to-transparent my-4"></div>}
     </div>
-    <h3 className="text-2xl font-bold text-light-text mb-2">{title}</h3>
-    <p className="text-medium-text">{description}</p>
+    <div className="pb-16 pt-1">
+      <h3 className="text-2xl font-black text-light-text mb-4 tracking-tight">{title}</h3>
+      <p className="text-lg text-medium-text max-w-xl font-medium leading-relaxed">{description}</p>
+    </div>
   </div>
 );
 
 const Process: React.FC = () => {
   return (
-    <section id="process" className="py-20 bg-gray-900/50">
+    <section id="process" className="py-32 bg-[#0C111B] relative">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-extrabold text-light-text">Our 24-Hour Process</h2>
-          <p className="text-lg text-medium-text mt-4 max-w-2xl mx-auto">Fast doesn't mean skipping steps. It means being efficient.</p>
-        </div>
-        <div className="relative">
-          <div className="hidden md:block absolute left-5 top-5 bottom-5 w-0.5 bg-gray-700"></div>
-          <div className="grid grid-cols-1 md:gap-y-24 gap-y-12">
+        <div className="flex flex-col lg:flex-row gap-20">
+          <div className="lg:w-1/3 sticky top-32 h-fit">
+            <p className="text-brand-primary font-black tracking-[0.3em] uppercase text-xs mb-4">Our Methodology</p>
+            <h2 className="text-4xl md:text-6xl font-black text-light-text mb-8">
+              THE <span className="text-gradient">SPRINT.</span>
+            </h2>
+            <p className="text-lg text-medium-text font-medium leading-relaxed">
+              Precision beats volume. Our 24-hour delivery window is made possible by a hyper-focused workflow that ignores everything but the goal.
+            </p>
+            
+            <div className="mt-12 p-8 glass rounded-3xl">
+              <div className="flex items-center space-x-4 mb-4">
+                <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+                <span className="text-xs font-bold uppercase tracking-widest text-light-text">Active Sprint Window</span>
+              </div>
+              <p className="text-sm text-medium-text">We take on only 2 projects per week to ensure 100% focus and zero latency.</p>
+            </div>
+          </div>
+          
+          <div className="lg:w-2/3 lg:pl-20">
             <ProcessStep 
-              number="1"
-              title="Discovery & Strategy"
-              description="We start with a quick call to understand your vision, goals, and brand. You provide the content, and we map out the blueprint."
+              number="01"
+              title="Strategy Injection"
+              description="A 30-minute high-fidelity briefing where we download your vision. We define the core user flows and technical requirements instantly."
             />
             <ProcessStep 
-              number="2"
-              title="Design & Development"
-              description="This is where the magic happens. Our team gets to work, crafting a beautiful design and writing clean code to bring it to life."
+              number="02"
+              title="Design & Dev Fusion"
+              description="Design and engineering happen in parallel. Using our proprietary library of optimized components, we build the shell while styling the brand."
             />
             <ProcessStep 
-              number="3"
-              title="Review & Launch"
-              description="We present the website for your review. After any final tweaks, we deploy it to the world, all within 24 hours of starting."
+              number="03"
+              title="QA & Live Deployment"
+              description="Automated testing for performance and responsiveness. Final review by our lead creative. Site goes live within 24 hours of step 01."
+              isLast={true}
             />
           </div>
         </div>
